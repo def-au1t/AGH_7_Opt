@@ -24,15 +24,25 @@ double dclock()
 
 int mm(double **first, double **second, double **multiply, int size)
 {
+  register unsigned int local_size = size;
   int i, j, k;
   double sum = 0;
-  for (i = 0; i < size; i++)
+  for (i = 0; i < local_size; i++)
   { //rows in multiply
-    for (j = 0; j < size; j++)
+    for (j = 0; j < local_size; j++)
     { //columns in multiply
-      for (k = 0; k < size; k++)
-      { //columns in first and rows in second
-        sum = sum + first[i][k] * second[k][j];
+      for (k = 0; k < local_size;)
+      {
+        if (k < local_size - 4)
+        {
+          sum = first[i][k] * second[k][j] + first[i][k + 1] * second[k + 1][j] + first[i][k + 2] * second[k + 2][j] + first[i][k + 3] * second[k + 3][j];
+          k += 4;
+        }
+        else
+        {
+          sum = sum + first[i][k] * second[k][j];
+          k++;
+        }
       }
       multiply[i][j] = sum;
       sum = 0;
@@ -44,9 +54,9 @@ int mm(double **first, double **second, double **multiply, int size)
 int main(int argc, const char *argv[])
 {
   register unsigned int i, j, iret;
-  double *first_ = (double **)malloc(SIZE * SIZE * sizeof(double));
-  double *second_ = (double **)malloc(SIZE * SIZE * sizeof(double));
-  double *multiply_ = (double **)malloc(SIZE * SIZE * sizeof(double));
+  double *first_ = (double *)malloc(SIZE * SIZE * sizeof(double));
+  double *second_ = (double *)malloc(SIZE * SIZE * sizeof(double));
+  double *multiply_ = (double *)malloc(SIZE * SIZE * sizeof(double));
 
   double **first = (double **)malloc(SIZE * sizeof(double *));
   double **second = (double **)malloc(SIZE * sizeof(double *));

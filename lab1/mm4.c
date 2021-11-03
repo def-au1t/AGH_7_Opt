@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SIZE 500
+#define SIZE 1100
 
 #include <sys/time.h>
 #include <time.h>
@@ -22,10 +22,10 @@ double dclock()
   return the_time;
 }
 
-int mm(double first[][SIZE], double second[][SIZE], double multiply[][SIZE])
+int mm(double **first, double **second, double **multiply, int size)
 {
-  register unsigned int local_size = SIZE;
-  register unsigned int i, j, k;
+  register unsigned int local_size = size;
+  int i, j, k;
   double sum = 0;
   for (i = local_size; i--;)
   { //rows in multiply
@@ -44,10 +44,22 @@ int mm(double first[][SIZE], double second[][SIZE], double multiply[][SIZE])
 
 int main(int argc, const char *argv[])
 {
-  int i, j, iret;
-  double first[SIZE][SIZE];
-  double second[SIZE][SIZE];
-  double multiply[SIZE][SIZE];
+  register unsigned int i, j, iret;
+  double *first_ = (double *)malloc(SIZE * SIZE * sizeof(double));
+  double *second_ = (double *)malloc(SIZE * SIZE * sizeof(double));
+  double *multiply_ = (double *)malloc(SIZE * SIZE * sizeof(double));
+
+  double **first = (double **)malloc(SIZE * sizeof(double *));
+  double **second = (double **)malloc(SIZE * sizeof(double *));
+  double **multiply = (double **)malloc(SIZE * sizeof(double *));
+
+  for (size_t l = 0; l < SIZE; l++)
+  {
+    first[l] = first_ + l * SIZE;
+    second[l] = second_ + l * SIZE;
+    multiply[l] = multiply_ + l * SIZE;
+  }
+
   double dtime;
   for (i = 0; i < SIZE; i++)
   { //rows in first
@@ -58,7 +70,7 @@ int main(int argc, const char *argv[])
     }
   }
   dtime = dclock();
-  iret = mm(first, second, multiply);
+  iret = mm(first, second, multiply, SIZE);
   dtime = dclock() - dtime;
   printf("Time: %le \n", dtime);
   /*  for(i=0;i<SIZE;i++){
@@ -66,6 +78,13 @@ int main(int argc, const char *argv[])
       printf("A[%d][%d]=%le \n",i,j,multiply[i][j]); 
     }
     }*/
+
   fflush(stdout);
+  free(first);
+  free(second);
+  free(multiply);
+  free(first_);
+  free(second_);
+  free(multiply_);
   return iret;
 }
