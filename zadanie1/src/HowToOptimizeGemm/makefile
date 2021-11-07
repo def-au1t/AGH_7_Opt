@@ -5,7 +5,7 @@ OLD  := MMult0
 
 CC         := gcc
 LINKER     := $(CC)
-CFLAGS     := -O2 -Wall -msse3
+CFLAGS     := -O2 -Wall -mavx2
 LDFLAGS    := -lm
 
 UTIL       := copy_matrix.o \
