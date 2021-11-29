@@ -23,7 +23,7 @@ double dclock()
 
 int ge(double **A, int SIZE)
 {
-  int i, j, k;
+  register unsigned int i, j, k;
   for (k = 0; k < SIZE; k++)
   {
     for (i = k + 1; i < SIZE; i++)

@@ -7,6 +7,7 @@
 
 static double gtod_ref_time_sec = 0.0;
 
+#define max(a, b) ((a > b) ? (a) : (b))
 /* Adapted from the bl2_clock() routine in the BLIS library */
 
 double dclock()
@@ -23,14 +24,32 @@ double dclock()
 
 int ge(double **A, int SIZE)
 {
-  int i, j, k;
+  register unsigned int i, j, k;
+  register double multiplier;
   for (k = 0; k < SIZE; k++)
   {
     for (i = k + 1; i < SIZE; i++)
     {
-      for (j = k + 1; j < SIZE; j++)
+      multiplier = (A[i][k] / A[k][k]);
+      for (j = k + 1; j < SIZE;)
       {
-        A[i][j] = A[i][j] - A[k][j] * (A[i][k] / A[k][k]);
+        if (j < max(SIZE - 8, 0))
+        {
+          A[i][j] = A[i][j] - A[k][j] * multiplier;
+          A[i][j + 1] = A[i][j + 1] - A[k][j + 1] * multiplier;
+          A[i][j + 2] = A[i][j + 2] - A[k][j + 2] * multiplier;
+          A[i][j + 3] = A[i][j + 3] - A[k][j + 3] * multiplier;
+          A[i][j + 4] = A[i][j + 4] - A[k][j + 4] * multiplier;
+          A[i][j + 5] = A[i][j + 5] - A[k][j + 5] * multiplier;
+          A[i][j + 6] = A[i][j + 6] - A[k][j + 6] * multiplier;
+          A[i][j + 7] = A[i][j + 7] - A[k][j + 7] * multiplier;
+          j += 8;
+        }
+        else
+        {
+          A[i][j] = A[i][j] - A[k][j] * multiplier;
+          j++;
+        }
       }
     }
   }

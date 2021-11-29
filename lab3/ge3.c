@@ -23,14 +23,16 @@ double dclock()
 
 int ge(double **A, int SIZE)
 {
-  int i, j, k;
+  register unsigned int i, j, k;
+  register double multiplier;
   for (k = 0; k < SIZE; k++)
   {
     for (i = k + 1; i < SIZE; i++)
     {
+      multiplier = (A[i][k] / A[k][k]);
       for (j = k + 1; j < SIZE; j++)
       {
-        A[i][j] = A[i][j] - A[k][j] * (A[i][k] / A[k][k]);
+        A[i][j] = A[i][j] - A[k][j] * multiplier;
       }
     }
   }
